@@ -14,9 +14,9 @@ const getProduct = () => {
         document.querySelector(".item__img").appendChild(addImage)
         addImage.setAttribute("src", `${product.imageUrl}`)
         addImage.setAttribute("alt", `${product.altTxt}`)
-        const addDescription = document.getElementById("description").inneHTML = product.description
+        const addDescription = document.getElementById("description").innerHTML = product.description
         const addColors = document.getElementById("colors")
-        for (color in product.colors) {r
+        for (color in product.colors) {
             addColors.innerHTML += `<option value = "${product.colors[color]}">${product.colors[color]}</option>`
         }
     })
