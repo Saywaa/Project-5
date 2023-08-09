@@ -38,6 +38,8 @@ addToCart.addEventListener("click", () => {
         id : id
     }
 
+    const productTitle = document.getElementById("title").innerHTML
+
     sameProduct = 0
     emptyLocalStorage = 0
     quantityIncorrect = 0
@@ -72,6 +74,7 @@ addToCart.addEventListener("click", () => {
                 else {
                     addLocalStorageUpdate[i].quantity = String(Number(addLocalStorage[i].quantity) + Number(createProduct.quantity))
                     sameProduct = 1
+                    window.alert('Vous avez ajouté ' + createProduct.quantity + ' ' + productTitle + ' de couleur ' + createProduct.color)
                 }
             }
             else {
@@ -84,6 +87,7 @@ addToCart.addEventListener("click", () => {
     if (sameProduct === 0 && emptyLocalStorage === 0 && quantityIncorrect === 0 && colorIncorrect === 0) {
         addLocalStorage.push(createProduct)
         localStorage.setItem("Panier", JSON.stringify(addLocalStorage))
+        window.alert('Vous avez ajouté ' + createProduct.quantity + ' ' + productTitle + ' de couleur ' + createProduct.color)
     }
 
     sameProduct = 0
