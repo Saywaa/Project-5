@@ -1,7 +1,10 @@
+// Récupération de la chaîne de requête dans l'URL du navigateur et extraction de l'ID de l'URL.
 const params = new URL(document.location).searchParams
 const id = params.get("id")
 const url = `http://localhost:3000/api/products/${id}`
 
+// La fonction getProduct récupère les données du produit prédemment cliqué grâce à l'URL et l'ID spécifique
+// pour ensuite l'afficher avec ses caractéristiques.
 const getProduct = () => {
     fetch(url)
     .then (function (res) {
@@ -15,22 +18,29 @@ const getProduct = () => {
         addImage.setAttribute("src", `${product.imageUrl}`)
         addImage.setAttribute("alt", `${product.altTxt}`)
         const addDescription = document.getElementById("description").innerHTML = product.description
+        // Le bout de code ci-dessous permet à l'utilisateur de choisir la couleur du produit dans un menu déroulant.
         const addColors = document.getElementById("colors")
         for (color in product.colors) {
             addColors.innerHTML += `<option value = "${product.colors[color]}">${product.colors[color]}</option>`
         }
     })
+    // Une erreur s'affiche à l'écran si la connection à l'API est impossible.
     .catch ((error) => {
-        window.alert('Connexion au serveur impossible !');
+        window.alert('Connexion au serveur impossible !')
     })
 }
 
 getProduct()
 
+// On déclare la constante "addToCart" qui correspond au bouton d'ajout au panier.
 const addToCart = document.getElementById("addToCart")
+// On déclare la variable "addLocalStorage" et "addLocalStorageUpdate" qui sont des tableaux
+// qui vont contenir les produits ajoutés au panier.
 addLocalStorage = []
 addLocalStorageUpdate = []
 
+// Le code ci-dessous nous permet d'enregistrer dans le local storage le produit, sa couleur et sa quantité
+// lors du clique sur le bouton d'ajout au panier.
 addToCart.addEventListener("click", () => {
     const createProduct = {
         quantity : document.getElementById("quantity").value,
@@ -45,6 +55,7 @@ addToCart.addEventListener("click", () => {
     quantityIncorrect = 0
     colorIncorrect = 0
 
+    // Tous les cas possibles sont traités dans le code ci-dessous.
     if (localStorage.getItem("Panier") !== null) {
         addLocalStorage = JSON.parse(localStorage.getItem("Panier"))
         addLocalStorageUpdate = addLocalStorage

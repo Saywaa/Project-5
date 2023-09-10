@@ -1,23 +1,27 @@
+// On déclare le tableau "localStorageProducts" qui récupère toutes les infos du local storage.
 let localStorageProducts = JSON.parse(localStorage.getItem("Panier"))
+// On déclare le tableau "products" qui récupèrera tous les IDs des produits contenus dans le panier.
 let products = []
 
-
+// Si le local storage est vide, le panier l'est donc aussi, on affiche donc 0 article et 0 €.
 if ((localStorageProducts) === null) {
-    document.querySelector('.cart__price').innerHTML = `<p>Total (<span id="totalQuantity">0</span> articles) : <span id="totalPrice">0</span> €</p>`
+    document.querySelector('.cart__price').innerHTML = `<p>Total (<span id="totalQuantity">0</span> article) : <span id="totalPrice">0</span> €</p>`
 }
 
+// La fonction "getData" récupère les informations du produit avec son ID dans l'API et retourne ses caractéristiques.
 function getData (productId) {
     res = fetch ('http://localhost:3000/api/products/' + productId)
     .then (data => {
         return data.json()
     })
-    .catch (error => {
-        error = `Une erreur s'est produite au chargement de la page, veuillez réessayer.`;
-        alert(error)
+    // Une erreur s'affiche à l'écran si la connection à l'API est impossible.
+    .catch ((error) => {
+        window.alert('Connexion au serveur impossible !')
     })
     return res
 }
 
+// La fonction "displayCart" affiche tous les produits contenus dans le panier avec leurs caractéristiques respectives.
 async function displayCart () {
     for (let i = 0; i < localStorageProducts.length; i++) {
         let product = localStorageProducts[i]
@@ -51,6 +55,7 @@ async function displayCart () {
 
 displayCart ()
 
+// "totalPriceCalcul" vient calculer la valeur et la quantité totale des produits du panier puis l'affiche en bas de la page.
 const totalPriceCalcul = () => {
     var totalQuantity = 0
     var totalPrice = 0
@@ -63,6 +68,7 @@ for (let i = 0; i < localStorageProducts.length; i++) {
     document.querySelector('.cart__price').innerHTML = `<p>Total (<span id="totalQuantity">${totalQuantity}</span> articles) : <span id="totalPrice">${totalPrice}</span> €</p>`
 }
 
+// "modifQuantity" permet de modifier la quantité des produits présents dans le panier. La modification est aussi faite dans le local storage.
 function modifQuantity () {
     let inputQuantity = Array.from(document.querySelectorAll(".cart__item__content__settings__quantity input"))
     let valueQuantity = Array.from(document.querySelectorAll('.itemQuantity'))
@@ -83,6 +89,7 @@ function modifQuantity () {
     }
 }
 
+// "deleteProduct" permet de supprimer totalement un produit du panier. La suppression est aussi faite dans le local storage.
 function deleteProduct() {
     let suppButton = Array.from(document.querySelectorAll(".deleteItem"))
     let newLocalStorage = []
@@ -103,8 +110,11 @@ function deleteProduct() {
     }
 }
 
+// On déclare la constante "btnForm" qui correspond au bouton commander.
 const btnForm = document.getElementById('order')
 
+// Au clique du bouton commander, on crée l'objet "contact" qui contient les informations du client
+// rentrées par ce dernier dans le formulaire.
 btnForm.addEventListener ('click', (e) => {
     e.preventDefault()
     const contact = {
@@ -115,6 +125,8 @@ btnForm.addEventListener ('click', (e) => {
         email : document.getElementById('email').value,
     }
 
+    // Les multiples fonctions ci-dessous vont vérifier que chaque input dans le formulaire sont validés par le regex
+    // et sont donc autorisés à être envoyer à l'API.
     function controlFirstName () {
         const firstName = contact.firstName
         const inputFirstName = document.getElementById('firstName')
@@ -190,16 +202,23 @@ btnForm.addEventListener ('click', (e) => {
         }
     }
 
+    // Si tout les inputs sont validés, on enregistre dans le local storage l'objet "contact".
+    // Ensuite on appel la fonction "sendToServer".
     if (controlFirstName() && controlLastName() && controlAddress() && controlCity() && controlEmail()) {
         localStorage.setItem("Contact", JSON.stringify(contact))
         sendToServer()
     }
+    // Si le formulaire n'est pas correctement rempli, on affiche une erreur.
     else {
-        window.alert('Veuillez remplir correctement le formulaire');
+        window.alert('Veuillez remplir correctement le formulaire')
     }
 
+    // On déclare la variable "orderId" qui va contenir le numéro de la commande.
     var orderId = ""
 
+    // La fonction "sendToServer" va poster l'objet "contact" et le tableau "products" dans l'API.
+    // Ensuite, l'API nous renvoie sur la page de confirmation de la commande
+    // grâce au numéro de cette dernière crée par l'API elle-même.
     function sendToServer() {
         fetch ('http://localhost:3000/api/products/order', {
             method: 'POST',
